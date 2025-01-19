@@ -1,6 +1,6 @@
 {
   "name": "node-vcvarsall",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Run vcvarsall.bat from node and get the environment variables",
   "typings": "./out/vcvarsall.d.ts",
   "main": "./out/vcvarsall.js",
@@ -21,7 +21,9 @@
     "test": "npx mocha --require ts-node/register ./test/*.test.ts"
   },
   "keywords": [
-    "vswhere"
+    "vswhere",
+    "vsdevcmd",
+    "vcvarsall"
   ],
   "repository": {
     "type": "git",
