@@ -1,0 +1,13 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Transpiled test source (in case it is present)
+out/test
+
+# Output of 'npm pack'
+*.tgz

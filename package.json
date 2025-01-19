@@ -1,0 +1,36 @@
+{
+  "name": "node-vcvarsall",
+  "version": "1.0.0",
+  "description": "Run vcvarsall.bat from node and get the environment variables",
+  "typings": "./out/vcvarsall.d.ts",
+  "main": "./out/vcvarsall.js",
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.5",
+    "@types/tmp": "^0.2.1",
+    "mocha": "^11.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "node-vswhere": "^1.0.2",
+    "tmp": "^0.2.1"
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "test": "npx mocha --require ts-node/register ./test/*.test.ts"
+  },
+  "keywords": [
+    "vswhere"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobbrow/node-vswhere.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bobbrow/node-vswhere/issues"
+  },
+  "author": "Bob Brown",
+  "publisher": "bobbrow",
+  "license": "MIT"
+}
