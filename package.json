@@ -1,7 +1,7 @@
 {
   "name": "node-vcvarsall",
   "version": "1.0.1",
-  "description": "Run vcvarsall.bat from node and get the environment variables",
+  "description": "Run vcvarsall.bat from node and collect the environment variables",
   "typings": "./out/vcvarsall.d.ts",
   "main": "./out/vcvarsall.js",
   "devDependencies": {
@@ -27,10 +27,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bobbrow/node-vswhere.git"
+    "url": "git+https://github.com/bobbrow/node-vcvarsall.git"
   },
   "bugs": {
-    "url": "https://github.com/bobbrow/node-vswhere/issues"
+    "url": "https://github.com/bobbrow/node-vcvarsall/issues"
   },
   "author": "Bob Brown",
   "publisher": "bobbrow",
