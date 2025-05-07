@@ -119,9 +119,10 @@ var vcvars;
                 `set`,
             ];
             const batFile = (yield getTempFileName()) + '.bat';
+            const execOptions = { env: { Path: process.env.Path } }; // Ensure we start with a clean environment
             yield fs_1.promises.writeFile(batFile, script.join('\n'));
             return new Promise((resolve, reject) => {
-                (0, child_process_1.exec)(batFile, (err, stdout, stderr) => {
+                (0, child_process_1.exec)(batFile, execOptions, (err, stdout, stderr) => {
                     if (err) {
                         reject(new Error(err.toString()));
                         return;

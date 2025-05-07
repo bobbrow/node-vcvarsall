@@ -108,9 +108,10 @@ export namespace vcvars {
             `set`,
         ];
         const batFile = await getTempFileName() + '.bat';
+        const execOptions = { env: { Path: process.env.Path } }; // Ensure we start with a clean environment
         await fs.writeFile(batFile, script.join('\n'));
         return new Promise<Vars>((resolve, reject) => {
-            exec(batFile, (err, stdout, stderr) => {
+            exec(batFile, execOptions, (err, stdout, stderr) => {
                 if (err) {
                     reject(new Error(err.toString()));
                     return;
