@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "node-vswhere": "^1.0.2",
-    "tmp": "^0.2.1"
+    "tmp": "^0.2.5"
   },
   "scripts": {
     "compile": "tsc -p ./",
