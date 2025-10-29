@@ -8,7 +8,11 @@ export declare namespace vcvars {
         x64 = "amd64",
         x64_x86 = "amd64_x86",
         x64_ARM = "amd64_arm",
-        x64_ARM64 = "amd64_arm64"
+        x64_ARM64 = "amd64_arm64",
+        arm64 = "arm64",
+        arm64_x86 = "arm64_x86",
+        arm64_x64 = "arm64_amd64",
+        arm64_ARM = "arm64_arm"
     }
     enum PlatformType {
         store = "store",
@@ -18,7 +22,7 @@ export declare namespace vcvars {
         /**
          * The architecture of the compiler and linker.
          */
-        host: 'x86' | 'x64';
+        host: 'x86' | 'x64' | 'arm64';
         /**
          * The architecture of the compiled binaries.
          */

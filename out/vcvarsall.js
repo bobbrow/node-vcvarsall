@@ -46,6 +46,7 @@ exports.vcvars = void 0;
 const child_process_1 = require("child_process");
 const fs_1 = require("fs");
 const tmp = __importStar(require("tmp"));
+const semver = __importStar(require("semver"));
 var vcvars;
 (function (vcvars) {
     let Architecture;
@@ -58,6 +59,10 @@ var vcvars;
         Architecture["x64_x86"] = "amd64_x86";
         Architecture["x64_ARM"] = "amd64_arm";
         Architecture["x64_ARM64"] = "amd64_arm64";
+        Architecture["arm64"] = "arm64";
+        Architecture["arm64_x86"] = "arm64_x86";
+        Architecture["arm64_x64"] = "arm64_amd64";
+        Architecture["arm64_ARM"] = "arm64_arm";
     })(Architecture = vcvars.Architecture || (vcvars.Architecture = {}));
     let PlatformType;
     (function (PlatformType) {
@@ -74,6 +79,10 @@ var vcvars;
             case Architecture.x64_x86: return { host: 'x64', target: 'x86' };
             case Architecture.x64_ARM: return { host: 'x64', target: 'ARM' };
             case Architecture.x64_ARM64: return { host: 'x64', target: 'ARM64' };
+            case Architecture.arm64: return { host: 'arm64', target: 'ARM64' };
+            case Architecture.arm64_x86: return { host: 'arm64', target: 'x86' };
+            case Architecture.arm64_x64: return { host: 'arm64', target: 'x64' };
+            case Architecture.arm64_ARM: return { host: 'arm64', target: 'ARM' };
         }
         throw new Error('Unknown architecture');
     }
@@ -96,6 +105,14 @@ var vcvars;
                     case 'ARM64': return Architecture.x64_ARM64;
                 }
                 break;
+            case 'arm64':
+                switch (hostTarget.target) {
+                    case 'x86': return Architecture.arm64_x86;
+                    case 'x64': return Architecture.arm64_x64;
+                    case 'ARM': return Architecture.arm64_ARM;
+                    case 'ARM64': return Architecture.arm64;
+                }
+                break;
         }
         throw new Error('Unknown architecture');
     }
@@ -108,7 +125,7 @@ var vcvars;
     function getVCVars(vsInstallation, options) {
         return __awaiter(this, void 0, void 0, function* () {
             tmp.setGracefulCleanup();
-            const args = getArgs(options);
+            const args = getArgs(options, vsInstallation.installationVersion);
             const vcvarsall = yield findVCVarsAll(vsInstallation);
             const sentinel = '--------';
             const script = [
@@ -163,11 +180,17 @@ var vcvars;
             resolve(path);
         }));
     }
-    function getArgs(options) {
+    function getArgs(options, vsVersion) {
         const args = [];
         if (!options) {
             if (process.arch === 'arm64') {
-                options = { arch: Architecture.x64_ARM64 };
+                // Check if Visual Studio version supports native ARM64 compilation (17.4+)
+                if (vsVersion && semver.gte(semver.coerce(vsVersion) || '0.0.0', '17.4.0')) {
+                    options = { arch: Architecture.arm64 };
+                }
+                else {
+                    options = { arch: Architecture.x64_ARM64 };
+                }
             }
             else if (process.arch === 'ia32') {
                 options = { arch: Architecture.x86 };

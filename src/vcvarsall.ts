@@ -4,7 +4,7 @@ import { exec, execFile } from "child_process";
 import { promises as fs } from "fs";
 import { vswhere } from "node-vswhere";
 import * as tmp from "tmp";
-import { setEnvironmentData } from "worker_threads";
+import * as semver from "semver";
 
 export namespace vcvars {
 
@@ -17,6 +17,10 @@ export namespace vcvars {
         x64_x86 = 'amd64_x86',
         x64_ARM = 'amd64_arm',
         x64_ARM64 = 'amd64_arm64',
+        arm64 = 'arm64',
+        arm64_x86 = 'arm64_x86',
+        arm64_x64 = 'arm64_amd64',
+        arm64_ARM = 'arm64_arm',
     }
     export enum PlatformType {
         store = 'store',
@@ -26,7 +30,7 @@ export namespace vcvars {
         /**
          * The architecture of the compiler and linker.
          */
-        host: 'x86' | 'x64';
+        host: 'x86' | 'x64' | 'arm64';
         /**
          * The architecture of the compiled binaries.
          */
@@ -42,6 +46,10 @@ export namespace vcvars {
             case Architecture.x64_x86: return { host: 'x64', target: 'x86' };
             case Architecture.x64_ARM: return { host: 'x64', target: 'ARM' };
             case Architecture.x64_ARM64: return { host: 'x64', target: 'ARM64' };
+            case Architecture.arm64: return { host: 'arm64', target: 'ARM64' };
+            case Architecture.arm64_x86: return { host: 'arm64', target: 'x86' };
+            case Architecture.arm64_x64: return { host: 'arm64', target: 'x64' };
+            case Architecture.arm64_ARM: return { host: 'arm64', target: 'ARM' };
         }
         throw new Error('Unknown architecture');
     }
@@ -61,6 +69,14 @@ export namespace vcvars {
                     case 'x64': return Architecture.x64;
                     case 'ARM': return Architecture.x64_ARM;
                     case 'ARM64': return Architecture.x64_ARM64;
+                }
+                break;
+            case 'arm64':
+                switch (hostTarget.target) {
+                    case 'x86': return Architecture.arm64_x86;
+                    case 'x64': return Architecture.arm64_x64;
+                    case 'ARM': return Architecture.arm64_ARM;
+                    case 'ARM64': return Architecture.arm64;
                 }
                 break;
         }
@@ -97,7 +113,7 @@ export namespace vcvars {
      */
     export async function getVCVars(vsInstallation: vswhere.Installation, options?: Options): Promise<Vars> {
         tmp.setGracefulCleanup();
-        const args = getArgs(options);
+        const args = getArgs(options, vsInstallation.installationVersion);
         const vcvarsall = await findVCVarsAll(vsInstallation);
         const sentinel = '--------';
         const script = [
@@ -151,11 +167,16 @@ export namespace vcvars {
         }));
     }
 
-    function getArgs(options?: Options): string[] {
+    function getArgs(options?: Options, vsVersion?: string): string[] {
         const args: string[] = [];
         if (!options) {
             if (process.arch === 'arm64') {
-                options = { arch: Architecture.x64_ARM64 };
+                // Check if Visual Studio version supports native ARM64 compilation (17.4+)
+                if (vsVersion && semver.gte(semver.coerce(vsVersion) || '0.0.0', '17.4.0')) {
+                    options = { arch: Architecture.arm64 };
+                } else {
+                    options = { arch: Architecture.x64_ARM64 };
+                }
             } else if (process.arch === 'ia32') {
                 options = { arch: Architecture.x86 };
             } else {
